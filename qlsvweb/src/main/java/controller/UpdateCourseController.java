@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.SQLException;
 
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -19,25 +20,14 @@ public class UpdateCourseController extends HttpServlet {
 CourseService courseService = new CourserServiceImpl();
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		resp.setContentType("text/html");
-		PrintWriter pw = resp.getWriter();
+		RequestDispatcher dispatcher = req.getRequestDispatcher("/course/updateCourseForm.jsp");
 		
-		String idString = req.getParameter("id");
-		String nameString = req.getParameter("name");
-		
-		pw.println("<form action=\"/qlsvweb/update-course\" method=\"post\">\r\n"
-				+ "		<label for=\"fname\">ID:</label><br>\r\n"
-				+ "	   	<input type=\"number\" id=\"fname\" name=\"id\" value='" + idString + "'><br>\r\n"
-				+ "	  	<label for=\"lname\">Name:</label><br>\r\n"
-				+ "	  	<input type=\"text\" id=\"lname\" name=\"name\" value='" + nameString + "'><br>\r\n"
-				+ "	  	<button type=\"submit\">Update</button>\r\n"
-				+ "	</form>");
+		dispatcher.forward(req, resp);
 	}
 	
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		resp.setContentType("text/html");
-		PrintWriter pw = resp.getWriter();
+		RequestDispatcher dispatcher = req.getRequestDispatcher("/course/updateCourseForm.jsp");
 		
 		try {
 			String idString = req.getParameter("id");
@@ -47,14 +37,15 @@ CourseService courseService = new CourserServiceImpl();
 			course.setId(Integer.parseInt(idString));
 			course.setName(nameString);
 			
-			courseService.update(course);
+			courseService.insert(course);
 			
-			pw.println("<p>Cap nhap Thanh cong</p>");
+			req.setAttribute("msg", "Cap nhap thanh cong");
 		} catch (SQLException e) {
-			pw.println("<p>Loi server</p>");
+			req.setAttribute("msg", "Loi server");
+			
 			e.printStackTrace();
 		}
 		
-		pw.println("<a href='/qlsvweb/menu-course'>Quay lai</a>");
+		dispatcher.forward(req, resp);
 	}
 }
